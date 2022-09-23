@@ -13,4 +13,4 @@ def pingback():
     return '<h1> Your ping is: ' + "{:.3f}".format(latency) + 'ms!</h1>'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
