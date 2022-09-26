@@ -3,6 +3,7 @@
 from flask import Flask, request
 from ping3 import ping
 import pandas as pd
+from os.path import exists
 
 app = Flask(__name__)
 
@@ -23,6 +24,10 @@ def pingback():
     score, agent = get_score()
     entry = score + "," + agent + "\n"
     
+    if not exists("scoreboard.csv"):
+        with open("scoreboard.csv", "w") as f:
+            f.write("ping,agent\n")
+
     with open("scoreboard.csv", "a") as f:
         f.write(entry)
 
