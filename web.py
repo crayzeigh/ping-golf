@@ -9,8 +9,12 @@ app = Flask(__name__)
 def get_score():
     ip_addr = request.remote_addr
     latency = ping(ip_addr, unit='ms') 
-    score = str(round(latency ,3))
-    return score
+    
+    if not latency:
+        return latency
+    else:
+        score = str(round(latency ,3))
+        return score
 
 def get_agent():
     agent = str(request.user_agent)
@@ -25,13 +29,13 @@ def pingback():
     with open("scoreboard.csv", "a") as f:
         f.write(entry)
 
-    return agent + ", is " + score + "ms from the target."
+    return agent + ", is " + score + "ms from the target.\n"
     
 @app.route('/', methods = ['GET'])
 def app_test():
     score = get_score()
     agent = get_agent()
-    
+
     return "<h1>Your Ping is: " + score + "ms</h1>\n\n<h3>User agent: \n" + agent + "</h3>\n"
     
 @app.route('/scoreboard')
