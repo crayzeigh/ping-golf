@@ -11,7 +11,7 @@ def get_score():
     latency = ping(ip_addr, unit='ms') 
     
     if not latency:
-        return latency
+        return "XX"
     else:
         score = str(round(latency ,3))
         return score
