@@ -2,10 +2,12 @@
 
 from flask import Flask, request
 from ping3 import ping
-import pandas as pd
-from os.path import exists
+import pandas.io.sql as psql
+import psycopg2
+import os
 
 app = Flask(__name__)
+con = psycopg2.connect(os.environ["DATABASE_URL"])
 
 def get_score():
     ip_addr = request.remote_addr
@@ -15,39 +17,37 @@ def get_score():
     if not latency:
         score = "XX"
     else:
-        score = str(round(latency ,3))
+        score = round(latency ,3)
 
     return score, agent
 
 @app.route('/', methods = ['POST'])
 def pingback():
     score, agent = get_score()
-    entry = score + "," + agent + "\n"
     
-    if not exists("scoreboard.csv"):
-        with open("scoreboard.csv", "w") as f:
-            f.write("ping,agent\n")
+    try:
+        with con.cursor() as cur:
+            cur.execute(f"INSERT INTO scoreboard (score,name) VALUES ({score},'{agent}');")
+            con.commit()
+        status = "Entry completed successfully"
+    except:
+        print ("Error on INSERT!")
+        status = "Error updating database"
 
-    with open("scoreboard.csv", "a") as f:
-        f.write(entry)
-
-    return agent + ", is " + score + "ms from the target.\n"
+    return f"{status}.\n{agent} is {score}ms away.\n"
     
 @app.route('/', methods = ['GET'])
 def app_test():
     score, agent = get_score()
 
-    return "<h1>Your Ping is: " + score + "ms</h1>\n\n<h3>User agent: \n" + agent + "</h3>\n"
+    return f"<h1>Your Ping is: {score}ms</h1>\n\n<h3>User agent: \n{agent}</h3>\n"
     
 @app.route('/scoreboard')
 def scoreboard():
-    columns = ["ping","agent"]
-    df = pd.read_csv("scoreboard.csv",usecols=columns)
-
-    df = df.sort_values("ping")
-    scoreboard = df.to_html(columns=columns)
-
-    return scoreboard
+   sql = "SELECT * FROM scoreboard;"
+   scores_df = psql.read_sql_query(sql, con)
+   sorted_scores_df = scores_df.sort_values(by=['score'], ascending=[True])
+   return sorted_scores_df.to_html(index=False)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
