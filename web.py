@@ -1,6 +1,6 @@
 # web.py
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from ping3 import ping
 import pandas.io.sql as psql
 import psycopg2
@@ -44,10 +44,13 @@ def app_test():
     
 @app.route('/scoreboard')
 def scoreboard():
-   sql = "SELECT * FROM scoreboard;"
-   scores_df = psql.read_sql_query(sql, con)
-   sorted_scores_df = scores_df.sort_values(by=['score'], ascending=[True])
-   return sorted_scores_df.to_html(index=False)
+    sql = "SELECT * FROM scoreboard;"
+    scores_df = psql.read_sql_query(sql, con)
+    scores_df.sort_values(by=['score'], ascending=[True], inplace=True)
+    scores_df.rename(columns={'score':'Ping in ms', 'name':'Name'}, inplace=True)
+    scoreboard = scores_df.to_html(index=False)
+
+    return render_template('scoreboard.html', scoreboard=scoreboard)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

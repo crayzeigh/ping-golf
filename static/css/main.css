@@ -1,0 +1,28 @@
+body{
+    background-color: rgb(25, 25, 25);
+    font-family: 'Gotham', 'Arial Narrow', Arial, Helvetica, sans-serif;
+    color:rgb(225, 225, 225)
+}
+
+table{
+    width: 75%;
+    border: none;
+    border-collapse: collapse;
+}
+
+th{
+    text-align:center;
+    border: none;
+    border-bottom: 1px solid;
+    padding-top: 4px;
+    padding-bottom: 10px;
+}
+
+td{
+    border: none;
+    padding: 4px;
+}
+
+tr:hover{
+    background-color: rgb(104, 104, 104);
+}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Equinix Ping Golf Highscores</title>
+        <meta http-equiv="refresh" content="60">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/css/main.css">
+    </head>
+    <body>
+        <center>
+            <img src="/static/Equinix_logo_horizontal_reversed_300.png" width=50%/>
+            <hr>
+            <h1>PING GOLF HIGHSCORES</h1>
+            {% autoescape off %}
+            {{ scoreboard }}
+            {% endautoescape %}
+        </center>
+    </body>
+</html>
