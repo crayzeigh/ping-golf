@@ -7,7 +7,6 @@ import psycopg2
 import os
 
 app = Flask(__name__)
-con = psycopg2.connect(os.environ["DATABASE_URL"])
 
 def get_score():
     ip_addr = request.remote_addr
@@ -24,11 +23,13 @@ def get_score():
 @app.route('/', methods = ['POST'])
 def pingback():
     score, agent = get_score()
-    
+    con = psycopg2.connect(os.environ["DATABASE_URL"])
+
     try:
         with con.cursor() as cur:
             cur.execute(f"INSERT INTO scoreboard (score,name) VALUES ({score},'{agent}');")
             con.commit()
+            con.close()
         status = "Entry completed successfully"
     except:
         print ("Error on INSERT!")
@@ -44,8 +45,10 @@ def app_test():
     
 @app.route('/scoreboard')
 def scoreboard():
+    con = psycopg2.connect(os.environ["DATABASE_URL"])
     sql = "SELECT * FROM scoreboard;"
     scores_df = psql.read_sql_query(sql, con)
+    con.close()
     scores_df.sort_values(by=['score'], ascending=[True], inplace=True)
     scores_df.rename(columns={'score':'Ping in ms', 'name':'Name'}, inplace=True)
     scoreboard = scores_df.to_html(index=False)
