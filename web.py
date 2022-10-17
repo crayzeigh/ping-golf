@@ -39,9 +39,9 @@ def pingback():
     
 @app.route('/', methods = ['GET'])
 def app_test():
-    score, agent = get_score()
+    hostname = os.uname()[1]
 
-    return f"<h1>Your Ping is: {score}ms</h1>\n\n<h3>User agent: \n{agent}</h3>\n"
+    return f"<h1>Weclome to {hostname}!</h1>"
     
 @app.route('/scoreboard')
 def scoreboard():
