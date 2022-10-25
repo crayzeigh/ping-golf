@@ -46,7 +46,7 @@ def app_test():
 @app.route('/scoreboard')
 def scoreboard():
     con = psycopg2.connect(os.environ["DATABASE_URL"])
-    sql = "SELECT * FROM scoreboard;"
+    sql = "SELECT * FROM scoreboard WHERE NAME NOT LIKE '%Mozilla%';"
     scores_df = psql.read_sql_query(sql, con)
     con.close()
     scores_df.sort_values(by=['score'], ascending=[True], inplace=True)
